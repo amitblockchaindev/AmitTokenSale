@@ -1,0 +1,149 @@
+
+const BigNumber = web3.BigNumber;
+
+require('chai')
+  .use(require('chai-as-promised'))
+  .use(require('chai-bignumber')(BigNumber))
+  .should();
+
+const AmitToken = artifacts.require('AmitToken');
+const AmitTokenCrowdsale = artifacts.require('AmitTokenCrowdsale');
+
+contract('AmitTokenCrowdsale', function([_, wallet, investor1, investor2]) {
+
+//   before(async function() {
+//     // Transfer extra ether to investor1's account for testing
+//     await web3.eth.sendTransaction({ from: _, to: investor1, value: ether(25) })
+//   });
+
+  beforeEach(async function () {
+    // Token config
+    this.name = "AmitToken";
+    this.symbol = "Amit";
+    this.decimals = 18;
+
+    // Deploy Token
+    this.token = await AmitToken.new(
+      this.name,
+      this.symbol,
+      this.decimals
+    );
+
+    // Crowdsale config
+    this.currentETHUSD = 4500;
+    this.preSaleRate = ((10**18)/this.currentETHUSD)*(0.1); //$0.1 equivalent wei
+    this.preSaleLimit = 30*10**6*10**18;//30million
+    this.seedSaleRate = ((10**18)/this.currentETHUSD)*(0.2);//$0.2 equivalent wei
+    this.seedSaleLimit = 50*10**6*10**18;//50million
+    this.wallet = wallet;
+
+    // Deploy AmitTokenCrowdsale
+
+    this.crowdsale = await AmitTokenCrowdsale.new(
+      this.preSaleRate,
+      this.preSaleLimitRate,
+      this.seedSaleRate,
+      this.seedSaleLimit,
+      this.wallet,
+      this.token.address
+    );
+
+      console.log(this.crowdsale.address);
+      console.log(this.preSaleRate);
+      console.log(this.preSaleLimit);
+      console.log(this.seedSaleRate);
+      console.log(this.seedSaleLimt);
+      console.log(this.wallet);
+      console.log(this.token.address);
+
+  });
+
+   describe('crowdsale', function() {
+  //   it('tracks the presale rate', async function() {
+  //     const rate = await this.crowdsale.rate();
+  //     rate.should.be.bignumber.equal(this.preSaleRate);
+  //   });
+
+    it('tracks the wallet', async function() {
+      const wallet = await this.crowdsale.wallet();
+     // wallet.should.equal(this.wallet);
+    });
+
+  //   it('tracks the token', async function() {
+  //     const token = await this.crowdsale.token();
+  //     token.should.equal(this.token.address);
+  //   });
+   });
+
+
+
+//     describe('when the crowdsale stage is presale', function() {
+//       beforeEach(async function () {
+//         // Crowdsale stage is already PreICO by default
+//         await this.crowdsale.buyTokens(investor1, { value: ether(1), from: investor1 });
+//       });
+
+//       it('forwards funds to the wallet', async function () {
+//         const balance = await web3.eth.getBalance(this.wallet);
+//         expect(balance.toNumber()).to.be.above(ether(100));
+//       });
+//     });
+
+//     describe('when the crowdsale stage is seed sale', function() {
+//       beforeEach(async function () {
+//         await this.crowdsale.buyTokens(investor1, { value: ether(1), from: investor1 });
+//       });
+//     });
+//   });
+
+//   describe('crowdsale stages', function() {
+
+//     it('it starts in PreICO', async function () {
+//       const stage = await this.crowdsale.stage();
+//       stage.should.be.bignumber.equal(this.preIcoStage);
+//     });
+
+//     it('starts at the preICO rate', async function () {
+//       const rate = await this.crowdsale.rate();
+//       rate.should.be.bignumber.equal(this.preIcoRate);
+//     });
+
+//     it('allows admin to update the stage & rate', async function() {
+//       await this.crowdsale.setCrowdsaleStage(this.icoStage, { from: _ });
+//       const stage = await this.crowdsale.stage();
+//       stage.should.be.bignumber.equal(this.icoStage);
+//       const rate = await this.crowdsale.rate();
+//       rate.should.be.bignumber.equal(this.icoRate);
+//     });
+
+//     it('prevents non-admin from updating the stage', async function () {
+//       await this.crowdsale.setCrowdsaleStage(this.icoStage, { from: investor1 }).should.be.rejectedWith(EVMRevert);
+//     });
+//   });
+
+  // describe('accepting payments', function() {
+  //   it('should accept payments', async function() {
+  //     const value = ether(1);
+  //     const purchaser = investor2;
+  //     await this.crowdsale.sendTransaction({ value: value, from: investor1 }).should.be.fulfilled;
+  //     await this.crowdsale.buyTokens(investor1, { value: value, from: purchaser }).should.be.fulfilled;
+  //   });
+  // });
+
+  
+
+
+//   describe('token transfers', function () {
+//     it('does not allow investors to transfer tokens during crowdsale', async function () {
+//       // Buy some tokens first
+//       await this.crowdsale.buyTokens(investor1, { value: ether(1), from: investor1 });
+//       // Attempt to transfer tokens during crowdsale
+//       await this.token.transfer(investor2, 1, { from: investor1 }).should.be.rejectedWith(EVMRevert);
+//     });
+//   });
+
+
+
+
+  
+});
